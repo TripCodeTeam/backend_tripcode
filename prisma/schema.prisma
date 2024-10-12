@@ -1,0 +1,109 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("MONGODB_URI")
+}
+
+model User {
+    id               String         @id @default(uuid()) @map("_id")
+    email            String         @unique
+    password         String
+    organizationName String
+    subscriptions    Subscription[] // Suscripciones de VPS
+    appDevelops      AppDevelop[] // Aplicaciones en desarrollo
+    reportIssues     ReportIssue[] // Reportes relacionados con aplicaciones
+    Vps              Vps[]
+}
+
+model Vps {
+    id             String         @id @default(cuid()) @map("_id")
+    userId         String
+    instanceName   String
+    machineType    String
+    zone           String
+    diskSizeGb     Int
+    createdAt      DateTime       @default(now())
+    updatedAt      DateTime       @updatedAt
+    user           User           @relation(fields: [userId], references: [id])
+    subscriptions  Subscription[] // Cambiar a singular si es una relación uno a uno
+    resources      VpsResource[] // Recursos utilizados por esta VPS
+    AppDevelop     AppDevelop[]
+    subscriptionId String? // Añadir esta línea si deseas referenciar la suscripción
+}
+
+model Subscription {
+    id         String       @id @default(uuid()) @map("_id")
+    userId     String
+    vpsId      String? // Este campo es opcional
+    plan       String
+    amount     Float
+    user       User         @relation(fields: [userId], references: [id])
+    vps        Vps?         @relation(fields: [vpsId], references: [id]) // Relación opcional con VPS
+    AppDevelop AppDevelop[] // Relación con aplicaciones en desarrollo
+}
+
+model AppDevelop {
+    id             String        @id @default(uuid()) @map("_id")
+    userId         String
+    name           String
+    description    String
+    vpsId          String? // VPS asociada a la aplicación en desarrollo
+    subscriptionId String? // Suscripción asociada a esta aplicación
+    resources      VpsResource[] // Recursos utilizados por esta aplicación
+    reportIssues   ReportIssue[] // Reportes relacionados con esta aplicación
+    user           User          @relation(fields: [userId], references: [id])
+    vps            Vps?          @relation(fields: [vpsId], references: [id])
+    subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+}
+
+model VpsResource {
+    id           String      @id @default(uuid()) @map("_id")
+    vpsId        String
+    cpuUsage     Float
+    memoryUsage  Float
+    storageUsage Float
+    createdAt    DateTime    @default(now())
+    vps          Vps         @relation(fields: [vpsId], references: [id])
+    AppDevelop   AppDevelop? @relation(fields: [appDevelopId], references: [id])
+    appDevelopId String?
+}
+
+model ReportIssue {
+    id          String          @id @default(uuid()) @map("_id")
+    description String
+    images      String[] // Array de URLs de imágenes
+    status      StatusIssues    @default(activo)
+    priority    PriorityStatus?
+    createdAt   DateTime        @default(now())
+    updatedAt   DateTime        @updatedAt
+    appId       String // ID de la aplicación en desarrollo relacionada
+    userId      String // ID del cliente que reporta
+    app         AppDevelop      @relation(fields: [appId], references: [id])
+    user        User            @relation(fields: [userId], references: [id])
+}
+
+enum StatusIssues {
+    activo
+    pendiente
+    corregido
+}
+
+enum PriorityStatus {
+    Baja
+    Media
+    Alta
+    Critica
+}
+
+enum appReport {
+    intranet
+    clients
+}
+
+enum statusSession {
+    activo
+    revocado
+}
