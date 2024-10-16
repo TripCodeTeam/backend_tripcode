@@ -6,10 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8080:8080" # Ajusta este puerto si tu aplicación escucha en otro puerto.
     environment:
       - NODE_ENV=production
-    volumes:
-      - .:/usr/src/app/
-      - /usr/src/app/node_modules
     restart: always
