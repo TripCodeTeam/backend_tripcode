@@ -16,6 +16,8 @@ model User {
     appDevelops      AppDevelop[] // Aplicaciones en desarrollo
     reportIssues     ReportIssue[] // Reportes relacionados con aplicaciones
     Vps              Vps[]
+    created_at       DateTime       @default(now())
+    updated_at       DateTime       @updatedAt
 }
 
 model Vps {
