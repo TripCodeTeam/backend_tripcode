@@ -9,6 +9,7 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
+    "rootDir": "./",  // Asegúrate de establecer el directorio raíz
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
@@ -18,5 +19,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true
-  }
+  },
+  "include": ["src/**/*", "lib/**/*"],  // Incluye todos los archivos en src
+  "exclude": ["node_modules", "**/*.spec.ts"]  // Excluye node_modules y archivos de prueba
 }

@@ -1,5 +1,6 @@
 generator client {
-    provider = "prisma-client-js"
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "windows", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -12,6 +13,8 @@ model User {
     email            String         @unique
     password         String
     organizationName String
+    numberContact    String
+    logoCompany      String?
     subscriptions    Subscription[] // Suscripciones de VPS
     appDevelops      AppDevelop[] // Aplicaciones en desarrollo
     reportIssues     ReportIssue[] // Reportes relacionados con aplicaciones
@@ -30,10 +33,10 @@ model Vps {
     createdAt      DateTime       @default(now())
     updatedAt      DateTime       @updatedAt
     user           User           @relation(fields: [userId], references: [id])
-    subscriptions  Subscription[] // Cambiar a singular si es una relación uno a uno
+    subscriptions  Subscription[] // Aquí no necesitas definir `fields` ni `references`
     resources      VpsResource[] // Recursos utilizados por esta VPS
     AppDevelop     AppDevelop[]
-    subscriptionId String? // Añadir esta línea si deseas referenciar la suscripción
+    subscriptionId String? // Este campo es opcional
 }
 
 model Subscription {
@@ -43,8 +46,8 @@ model Subscription {
     plan       String
     amount     Float
     user       User         @relation(fields: [userId], references: [id])
-    vps        Vps?         @relation(fields: [vpsId], references: [id]) // Relación opcional con VPS
-    AppDevelop AppDevelop[] // Relación con aplicaciones en desarrollo
+    vps        Vps?         @relation(fields: [vpsId], references: [id]) // Mantén `fields` y `references` aquí
+    AppDevelop AppDevelop[]
 }
 
 model AppDevelop {

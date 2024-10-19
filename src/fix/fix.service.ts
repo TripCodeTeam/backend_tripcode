@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFixDto } from './dto/create-fix.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import TokenService from '../../lib/TokenAccess'; // Asegúrate de que la ruta sea correcta
+import TokenService from "../../lib/TokenAccess"
 
 @Injectable()
 export class FixService {

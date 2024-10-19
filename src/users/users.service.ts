@@ -13,6 +13,8 @@ export class UsersService {
         email: createUserDto.email,
         password: createUserDto.password,
         organizationName: createUserDto.organizationName, // Almacena el nombre de la organización
+        numberContact: createUserDto.numberContact,
+        logoCompany: createUserDto.logoCompany,
         // Agrega más campos si es necesario
       },
     });
