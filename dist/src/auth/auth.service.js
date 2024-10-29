@@ -68,6 +68,22 @@ let AuthService = class AuthService {
             }
         }
     }
+    async logout(userId) {
+        return { success: true, message: 'User logged out successfully' };
+    }
+    async refreshToken(refreshToken) {
+        try {
+            const payload = this.jwtService.verify(refreshToken);
+            const newAccessToken = this.jwtService.sign({ userId: payload.userId });
+            return {
+                success: true,
+                access_token: newAccessToken,
+            };
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException('Invalid refresh token');
+        }
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

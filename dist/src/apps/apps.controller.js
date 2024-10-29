@@ -32,6 +32,15 @@ let AppsController = class AppsController {
     listAppReports(appId) {
         return this.appsService.listReportsForApp(appId);
     }
+    getAllAppsForClient(clientId) {
+        return this.appsService.appsClient(clientId);
+    }
+    updateApp(appId, updateAppDto) {
+        return this.appsService.updateAppById(appId, updateAppDto);
+    }
+    deleteApp(appId) {
+        return this.appsService.deleteApp(appId);
+    }
 };
 exports.AppsController = AppsController;
 __decorate([
@@ -62,6 +71,28 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AppsController.prototype, "listAppReports", null);
+__decorate([
+    (0, common_1.Get)('client/:clientId'),
+    __param(0, (0, common_1.Param)('clientId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AppsController.prototype, "getAllAppsForClient", null);
+__decorate([
+    (0, common_1.Patch)('/:appId'),
+    __param(0, (0, common_1.Param)('appId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, create_app_dto_1.CreateAppDto]),
+    __metadata("design:returntype", void 0)
+], AppsController.prototype, "updateApp", null);
+__decorate([
+    (0, common_1.Delete)('/:appId'),
+    __param(0, (0, common_1.Param)('appId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AppsController.prototype, "deleteApp", null);
 exports.AppsController = AppsController = __decorate([
     (0, common_1.Controller)('apps'),
     __metadata("design:paramtypes", [apps_service_1.AppsService])

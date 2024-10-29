@@ -28,8 +28,13 @@ let AuthController = class AuthController {
         return this.authService.login(user);
     }
     getProfile(req) {
-        console.log(req);
         return this.authService.getProfile(req.user.userId);
+    }
+    async logout(req) {
+        return this.authService.logout(req.user.userId);
+    }
+    async refreshToken(refreshToken) {
+        return this.authService.refreshToken(refreshToken);
     }
 };
 exports.AuthController = AuthController;
@@ -54,6 +59,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "getProfile", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('logout'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "logout", null);
+__decorate([
+    (0, common_1.Post)('refresh'),
+    __param(0, (0, common_1.Body)('refreshToken')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refreshToken", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

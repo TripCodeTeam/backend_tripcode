@@ -20,17 +20,33 @@ export declare class AuthController {
     getProfile(req: any): Promise<{
         success: boolean;
         data: {
-            id: string;
-            companyName: string;
-            email: string;
-            logoCompany: string | null;
-            createdAt: Date;
-            updatedAt: Date;
+            success: boolean;
+            data: {
+                id: string;
+                companyName: string;
+                email: string;
+                logoCompany: string | null;
+                createdAt: Date;
+                updatedAt: Date;
+            };
+            error?: undefined;
+        } | {
+            success: boolean;
+            error: string;
+            data?: undefined;
         };
         error?: undefined;
     } | {
         success: boolean;
         error: string;
         data?: undefined;
+    }>;
+    logout(req: any): Promise<{
+        success: boolean;
+        message: string;
+    }>;
+    refreshToken(refreshToken: string): Promise<{
+        success: boolean;
+        access_token: string;
     }>;
 }

@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AppsService } from './apps.service';
-import { CreateAppDto, ReportsApp } from './dto/create-app.dto';
+import { CreateAppDto } from './dto/create-app.dto';
 import { ScalarReportApp } from 'types/Apps';
 
 @Controller('apps')
@@ -33,5 +33,23 @@ export class AppsController {
   @Get('report/all/:appId')
   listAppReports(@Param('appId') appId: string) {
     return this.appsService.listReportsForApp(appId);
+  }
+
+  // Nuevo - Obtener todas las aplicaciones de un cliente
+  @Get('client/:clientId')
+  getAllAppsForClient(@Param('clientId') clientId: string) {
+    return this.appsService.appsClient(clientId);
+  }
+
+  // Nuevo - Actualizar información de una aplicación
+  @Patch('/:appId')
+  updateApp(@Param('appId') appId: string, @Body() updateAppDto: CreateAppDto) {
+    return this.appsService.updateAppById(appId, updateAppDto);
+  }
+
+  // Nuevo - Eliminar una aplicación
+  @Delete('/:appId')
+  deleteApp(@Param('appId') appId: string) {
+    return this.appsService.deleteApp(appId);
   }
 }

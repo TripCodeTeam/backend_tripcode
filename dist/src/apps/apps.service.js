@@ -119,6 +119,39 @@ let AppsService = class AppsService {
             }
         }
     }
+    async updateAppById(appId, updateAppDto) {
+        try {
+            const updatedApp = await this.prisma.appDevelop.update({
+                where: { id: appId },
+                data: {
+                    ...updateAppDto,
+                },
+            });
+            if (updatedApp) {
+                return { success: true, data: updatedApp };
+            }
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, error: error.message };
+            }
+        }
+    }
+    async deleteApp(appId) {
+        try {
+            const deletedApp = await this.prisma.appDevelop.delete({
+                where: { id: appId },
+            });
+            if (deletedApp) {
+                return { success: true, data: "application successfully deleted" };
+            }
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, error: error.message };
+            }
+        }
+    }
 };
 exports.AppsService = AppsService;
 exports.AppsService = AppsService = __decorate([

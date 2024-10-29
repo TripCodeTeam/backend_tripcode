@@ -34,8 +34,8 @@ let JwtAuthGuard = class JwtAuthGuard {
             console.log('User assigned to request:', request.user);
             return true;
         }
-        catch (err) {
-            console.log('Token verification failed:', err);
+        catch (error) {
+            console.error('Error verifying token:', error);
             return false;
         }
     }

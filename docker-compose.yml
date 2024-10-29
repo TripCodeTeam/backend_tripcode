@@ -1,0 +1,14 @@
+services:
+  tripcode-api:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - .:/usr/src/app/
+      - /usr/src/app/node_modules
+    restart: always

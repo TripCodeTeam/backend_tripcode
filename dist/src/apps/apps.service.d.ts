@@ -1,6 +1,7 @@
 import { CreateAppDto } from './dto/create-app.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ScalarReportApp } from 'types/Apps';
+import { UpdateAppDto } from './dto/update-app.dto';
 export declare class AppsService {
     private prisma;
     constructor(prisma: PrismaService);
@@ -8,14 +9,14 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             name: string;
-            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.StatusApp;
             repositoryUrl: string | null;
             deploymentUrl: string | null;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -27,14 +28,14 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             name: string;
-            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.StatusApp;
             repositoryUrl: string | null;
             deploymentUrl: string | null;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -46,14 +47,14 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             name: string;
-            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.StatusApp;
             repositoryUrl: string | null;
             deploymentUrl: string | null;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
         }[];
         error?: undefined;
     } | {
@@ -66,23 +67,23 @@ export declare class AppsService {
         data: ({
             client: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 companyName: string;
                 email: string;
                 password: string;
                 logoCompany: string | null;
-                createdAt: Date;
-                updatedAt: Date;
             };
         } & {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             name: string;
-            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.StatusApp;
             repositoryUrl: string | null;
             deploymentUrl: string | null;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
         })[];
         error?: undefined;
     } | {
@@ -94,14 +95,14 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            clientId: string;
             description: string;
             status: import(".prisma/client").$Enums.StatusIssue;
-            appId: string;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
             images: string[];
             priority: import(".prisma/client").$Enums.PriorityStatus;
+            appId: string;
         };
         error?: undefined;
     } | {
@@ -113,15 +114,43 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            clientId: string;
             description: string;
             status: import(".prisma/client").$Enums.StatusIssue;
-            appId: string;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
             images: string[];
             priority: import(".prisma/client").$Enums.PriorityStatus;
+            appId: string;
         }[];
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        data?: undefined;
+    }>;
+    updateAppById(appId: string, updateAppDto: UpdateAppDto): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            name: string;
+            description: string | null;
+            status: import(".prisma/client").$Enums.StatusApp;
+            repositoryUrl: string | null;
+            deploymentUrl: string | null;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        data?: undefined;
+    }>;
+    deleteApp(appId: string): Promise<{
+        success: boolean;
+        data: string;
         error?: undefined;
     } | {
         success: boolean;

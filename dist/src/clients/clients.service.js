@@ -41,23 +41,48 @@ let ClientsService = class ClientsService {
             }
         }
     }
+    async getAllClients() {
+        try {
+            const clients = await this.prisma.clients.findMany();
+            return { success: true, data: clients };
+        }
+        catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+    async deleteClient(clientId) {
+        try {
+            await this.prisma.clients.delete({ where: { id: clientId } });
+            return { success: true, data: 'Client deleted successfully' };
+        }
+        catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
     async findByEmail(email) {
         return await this.prisma.clients.findUnique({
             where: { email },
         });
     }
     async getSafeUser(userId) {
-        if (!userId) {
-            throw new Error('userId is required!');
+        try {
+            if (!userId) {
+                throw new Error('userId is required!');
+            }
+            const user = await this.prisma.clients.findUnique({
+                where: { id: userId },
+            });
+            if (!user) {
+                throw new common_1.UnauthorizedException('User not found');
+            }
+            const { password, ...safeUser } = user;
+            return { success: true, data: safeUser };
         }
-        const user = await this.prisma.clients.findUnique({
-            where: { id: userId },
-        });
-        if (!user) {
-            throw new common_1.UnauthorizedException('User not found');
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, error: error.message };
+            }
         }
-        const { password, ...safeUser } = user;
-        return safeUser;
     }
     async comparePasswords(password, hashedPassword) {
         return await bcrypt.compare(password, hashedPassword);
@@ -78,53 +103,63 @@ let ClientsService = class ClientsService {
         }
     }
     async updateClientById(id, updateClientDto) {
-        const { companyName, logoCompany, contacts, apps } = updateClientDto;
-        return await this.prisma.clients.update({
-            where: { id },
-            data: {
-                ...(companyName && { companyName }),
-                ...(logoCompany && { logoCompany }),
-                ...(contacts && {
-                    contacts: {
-                        upsert: contacts.map(({ id, name, phone, mail }) => ({
-                            where: { id: id || '' },
-                            update: { name, phone, mail },
-                            create: { name, phone, mail },
-                        })),
-                    },
-                }),
-                ...(apps && {
-                    apps: {
-                        upsert: apps.map(({ id, name, description, status, repositoryUrl, deploymentUrl, }) => ({
-                            where: { id: id || '' },
-                            update: {
-                                name,
-                                description,
-                                status,
-                                repositoryUrl,
-                                deploymentUrl,
-                            },
-                            create: {
-                                name,
-                                description,
-                                status,
-                                repositoryUrl,
-                                deploymentUrl,
-                            },
-                        })),
-                    },
-                }),
-            },
-        });
+        try {
+            const { companyName, logoCompany, contacts, apps, email } = updateClientDto;
+            const updateClient = await this.prisma.clients.update({
+                where: { id },
+                data: {
+                    ...(companyName && { companyName }),
+                    ...(email && { email }),
+                    ...(logoCompany && { logoCompany }),
+                    ...(contacts && {
+                        contacts: {
+                            upsert: contacts.map(({ id, name, phone, mail }) => ({
+                                where: { id: id || '' },
+                                update: { name, phone, mail },
+                                create: { name, phone, mail },
+                            })),
+                        },
+                    }),
+                    ...(apps && {
+                        apps: {
+                            upsert: apps.map(({ id, name, description, status, repositoryUrl, deploymentUrl }) => ({
+                                where: { id: id || '' },
+                                update: {
+                                    name,
+                                    description,
+                                    status,
+                                    repositoryUrl,
+                                    deploymentUrl,
+                                },
+                                create: {
+                                    name,
+                                    description,
+                                    status,
+                                    repositoryUrl,
+                                    deploymentUrl,
+                                },
+                            })),
+                        },
+                    }),
+                },
+            });
+            return { success: true, data: updateClient };
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, error: error.message };
+            }
+        }
     }
     async generateApiKey(clientId) {
         const apiKey = this.generateRandomApiKey();
-        return await this.prisma.apiKey.create({
+        const key = await this.prisma.apiKey.create({
             data: {
                 key: apiKey,
                 client: { connect: { id: clientId } },
             },
         });
+        return { success: true, data: key };
     }
     generateRandomApiKey() {
         return Math.random().toString(36).substring(2, 15);
