@@ -205,11 +205,13 @@ export class ClientsService {
    * @param clientId - Unique identifier of the client.
    * @returns The newly generated API key.
    */
-  async generateApiKey(clientId: string) {
+  async generateApiKey(clientId: string, title: string, description?: string) {
     const apiKey = this.generateRandomApiKey();
     const key = await this.prisma.apiKey.create({
       data: {
         key: apiKey,
+        title,
+        description,
         client: { connect: { id: clientId } },
       },
     });

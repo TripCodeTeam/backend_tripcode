@@ -107,15 +107,17 @@ export declare class ClientsService {
         error: string;
         data?: undefined;
     }>;
-    generateApiKey(clientId: string): Promise<{
+    generateApiKey(clientId: string, title: string, description?: string): Promise<{
         success: boolean;
         data: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
             clientId: string;
+            description: string | null;
             status: import(".prisma/client").$Enums.ApiKeyStatus;
             key: string;
+            title: string;
             appId: string | null;
         };
     }>;

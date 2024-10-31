@@ -82,6 +82,8 @@ export declare class ClientsController {
     }>;
     generateApiKey(data: {
         clientId: string;
+        title: string;
+        description?: string;
     }): Promise<{
         success: boolean;
         data: {
@@ -89,8 +91,10 @@ export declare class ClientsController {
             createdAt: Date;
             updatedAt: Date;
             clientId: string;
+            description: string | null;
             status: import(".prisma/client").$Enums.ApiKeyStatus;
             key: string;
+            title: string;
             appId: string | null;
         };
     }>;

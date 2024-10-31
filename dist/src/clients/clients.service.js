@@ -151,11 +151,13 @@ let ClientsService = class ClientsService {
             }
         }
     }
-    async generateApiKey(clientId) {
+    async generateApiKey(clientId, title, description) {
         const apiKey = this.generateRandomApiKey();
         const key = await this.prisma.apiKey.create({
             data: {
                 key: apiKey,
+                title,
+                description,
                 client: { connect: { id: clientId } },
             },
         });

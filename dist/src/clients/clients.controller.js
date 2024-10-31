@@ -37,7 +37,7 @@ let ClientsController = class ClientsController {
         return this.clientsService.deleteClient(clientId);
     }
     generateApiKey(data) {
-        return this.clientsService.generateApiKey(data.clientId);
+        return this.clientsService.generateApiKey(data.clientId, data.title, data.description);
     }
 };
 exports.ClientsController = ClientsController;

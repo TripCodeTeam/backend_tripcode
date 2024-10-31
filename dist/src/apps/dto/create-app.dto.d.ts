@@ -29,6 +29,8 @@ export type ReportsApp = {
 export type ApiKeyApp = {
     id?: string;
     key: string;
+    title: string;
+    description?: string;
     status?: StatusApiKey;
     clientId: string;
     client?: CreateClientDto;

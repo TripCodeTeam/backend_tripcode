@@ -67,7 +67,7 @@ export class ClientsController {
    * @returns Generated API key linked to the client.
    */
   @Post('/key')
-  generateApiKey(@Body() data: { clientId: string }) {
-    return this.clientsService.generateApiKey(data.clientId);
+  generateApiKey(@Body() data: { clientId: string, title: string, description?: string }) {
+    return this.clientsService.generateApiKey(data.clientId, data.title, data.description);
   }
 }

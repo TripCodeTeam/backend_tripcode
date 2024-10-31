@@ -47,15 +47,17 @@ model AppDevelop {
 }
 
 model ApiKey {
-    id        String       @id @default(uuid()) @map("_id")
-    key       String       @unique // La clave de API generada
-    status    ApiKeyStatus @default(active) // Estado de la clave API
-    createdAt DateTime     @default(now())
-    updatedAt DateTime     @updatedAt
-    clientId  String // Relación con el cliente que posee la clave
-    client    Clients      @relation(fields: [clientId], references: [id])
-    appId     String? // Relación opcional con una aplicación en particular
-    app       AppDevelop?  @relation(fields: [appId], references: [id])
+    id          String       @id @default(uuid()) @map("_id")
+    key         String       @unique // La clave de API generada
+    status      ApiKeyStatus @default(active) // Estado de la clave API
+    title       String
+    description String?
+    clientId    String // Relación con el cliente que posee la clave
+    client      Clients      @relation(fields: [clientId], references: [id])
+    appId       String? // Relación opcional con una aplicación en particular
+    app         AppDevelop?  @relation(fields: [appId], references: [id])
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
 }
 
 model ReportIssue {
