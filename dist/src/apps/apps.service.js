@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const huggingface_service_1 = require("../huggingface/huggingface.service");
 let AppsService = class AppsService {
-    constructor(prisma) {
+    constructor(prisma, ia) {
         this.prisma = prisma;
+        this.ia = ia;
     }
     async create(createAppDto) {
         try {
@@ -57,6 +59,7 @@ let AppsService = class AppsService {
             const client_apps = await this.prisma.appDevelop.findMany({
                 where: { clientId },
             });
+            console.log(client_apps);
             if (client_apps) {
                 return { success: true, data: client_apps };
             }
@@ -84,7 +87,7 @@ let AppsService = class AppsService {
             }
         }
     }
-    async addReportToApp({ description, images, appId, clientId, }) {
+    async addReportToApp({ description, images, appId, clientId, apiKeyId, }) {
         try {
             const newReport = await this.prisma.reportIssue.create({
                 data: {
@@ -92,6 +95,7 @@ let AppsService = class AppsService {
                     images,
                     appId,
                     clientId,
+                    apiKeyId
                 },
             });
             if (newReport) {
@@ -104,10 +108,95 @@ let AppsService = class AppsService {
             }
         }
     }
+    async addProgressToReport(data, newStatus) {
+        try {
+            if (newStatus) {
+                const newProgress = await this.prisma.reportProgress.create({
+                    data: {
+                        reportId: data.reportId,
+                        description: data.description,
+                        images: data.images,
+                    },
+                });
+                const changeStatusReport = await this.prisma.reportIssue.update({
+                    where: { id: data.reportId }, data: {
+                        status: newStatus
+                    }
+                });
+                if (changeStatusReport)
+                    return { success: true, data: { ...newProgress, status: changeStatusReport.status } };
+            }
+            else {
+                const newProgress = await this.prisma.reportProgress.create({
+                    data: {
+                        reportId: data.reportId,
+                        description: data.description,
+                        images: data.images,
+                    },
+                });
+                const changeStatusReport = await this.prisma.reportIssue.update({
+                    where: { id: data.reportId }, data: {
+                        status: "inProgress"
+                    }
+                });
+                if (changeStatusReport)
+                    return { success: true, data: newProgress };
+            }
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, error: error.message };
+            }
+        }
+    }
+    async getAllProgressInReport(reportId) {
+        try {
+            const response = await this.prisma.reportProgress.findMany({ where: { reportId } });
+            if (response) {
+                return { success: true, data: response };
+            }
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, error: error.message };
+            }
+        }
+    }
+    async addCommentToReport(data) {
+        try {
+            const newComment = await this.prisma.reportComment.create({
+                data: {
+                    reportId: data.reportId,
+                    clientId: data.clientId,
+                    content: data.content,
+                    images: data.images,
+                },
+            });
+            return { success: true, data: newComment };
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, error: error.message };
+            }
+        }
+    }
+    async iaAutReportApp(errorMessage) {
+        try {
+            const response = await this.ia.analyzeError(errorMessage);
+            if (response)
+                return { success: true, data: response };
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, error: error.message };
+            }
+        }
+    }
     async listReportsForApp(appId) {
         try {
             const listReports = await this.prisma.reportIssue.findMany({
                 where: { appId },
+                include: { app: true }
             });
             if (listReports) {
                 return { success: true, data: listReports };
@@ -156,6 +245,7 @@ let AppsService = class AppsService {
 exports.AppsService = AppsService;
 exports.AppsService = AppsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        huggingface_service_1.HuggingfaceService])
 ], AppsService);
 //# sourceMappingURL=apps.service.js.map

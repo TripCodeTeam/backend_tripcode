@@ -13,6 +13,7 @@ exports.ClientsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const bcrypt = require("bcryptjs");
+const date_fns_1 = require("date-fns");
 let ClientsService = class ClientsService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -151,17 +152,102 @@ let ClientsService = class ClientsService {
             }
         }
     }
-    async generateApiKey(clientId, title, description) {
+    async generateApiKey(clientId, description, subscriptionType, monthlyFee, isFree, appId) {
         const apiKey = this.generateRandomApiKey();
+        let titleApi = null;
+        if (subscriptionType == "BUG_SUPPORT")
+            titleApi = "Soporte 24/7";
+        if (subscriptionType == "FEATURE_DEVELOPMENT")
+            titleApi = "Desarrollo de nuevas funcionalidades";
         const key = await this.prisma.apiKey.create({
             data: {
                 key: apiKey,
-                title,
+                title: titleApi,
                 description,
                 client: { connect: { id: clientId } },
+                app: { connect: { id: appId } },
+                ApiKeyPrice: {
+                    create: {
+                        subscriptionType,
+                        monthlyFee: monthlyFee || 0,
+                        isFree: isFree || false,
+                        client: { connect: { id: clientId } }
+                    }
+                }
             },
         });
         return { success: true, data: key };
+    }
+    async listAllApiKeysForClient(clientId) {
+        try {
+            const client = await this.prisma.apiKey.findMany({ where: { clientId } });
+            console.log("client With Keys: ", client);
+            if (client)
+                return { success: true, data: client };
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, error: error.message };
+            }
+        }
+    }
+    async apiKeysForClient(clientId) {
+        const apis = await this.prisma.apiKey.findMany({ where: { clientId } });
+        if (apis)
+            return { success: true, data: apis };
+    }
+    async supportApiReqsForClient(clientId, month, year) {
+        try {
+            const startDate = (0, date_fns_1.startOfMonth)(new Date(year, month - 1));
+            const endDate = (0, date_fns_1.endOfMonth)(new Date(year, month - 1));
+            const count = await this.prisma.reportProgress.count({
+                where: {
+                    report: {
+                        clientId: clientId,
+                    },
+                    createdAt: {
+                        gte: startDate,
+                        lte: endDate,
+                    },
+                },
+            });
+            return count;
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Error retrieving report progress count: ${error.message}`);
+            }
+            return 0;
+        }
+    }
+    async getMonthlyReportsCounts(clientId, year) {
+        if (!clientId || !year) {
+            throw new Error('Both clientId and year are required parameters.');
+        }
+        const currentMonth = new Date().getMonth();
+        const data = [];
+        for (let month = 0; month <= currentMonth; month++) {
+            const startDate = (0, date_fns_1.startOfMonth)(new Date(year, month));
+            const endDate = (0, date_fns_1.endOfMonth)(new Date(year, month));
+            try {
+                const usageCount = await this.prisma.reportIssue.count({
+                    where: {
+                        clientId: clientId,
+                        createdAt: {
+                            gte: startDate,
+                            lte: endDate,
+                        },
+                    },
+                });
+                const monthName = (0, date_fns_1.format)(startDate, 'MMM');
+                data.push({ month: monthName, usage: usageCount });
+            }
+            catch (error) {
+                console.error(`Error fetching data for month ${month + 1}:`, error);
+                throw new Error(`Failed to fetch report issue count for ${month + 1}`);
+            }
+        }
+        return { success: true, data };
     }
     generateRandomApiKey() {
         return Math.random().toString(36).substring(2, 15);

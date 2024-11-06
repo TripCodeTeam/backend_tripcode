@@ -37,7 +37,13 @@ let ClientsController = class ClientsController {
         return this.clientsService.deleteClient(clientId);
     }
     generateApiKey(data) {
-        return this.clientsService.generateApiKey(data.clientId, data.title, data.description);
+        return this.clientsService.generateApiKey(data.clientId, data.description, data.subscriptionType, data.monthlyFee, data.isFree, data.appId);
+    }
+    getAllKeysForClient(clientId) {
+        return this.clientsService.listAllApiKeysForClient(clientId);
+    }
+    getReqInYear({ clientId, year }) {
+        return this.clientsService.getMonthlyReportsCounts(clientId, year);
     }
 };
 exports.ClientsController = ClientsController;
@@ -83,6 +89,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "generateApiKey", null);
+__decorate([
+    (0, common_1.Get)('/key/:clientId'),
+    __param(0, (0, common_1.Param)('clientId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ClientsController.prototype, "getAllKeysForClient", null);
+__decorate([
+    (0, common_1.Post)('/key/analytics/reqs'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ClientsController.prototype, "getReqInYear", null);
 exports.ClientsController = ClientsController = __decorate([
     (0, common_1.Controller)('clients'),
     __metadata("design:paramtypes", [clients_service_1.ClientsService])

@@ -3,6 +3,7 @@ import { Controller, Post, Body, Get, Param, Put, Delete } from '@nestjs/common'
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { ApiKeySubscriptions } from 'src/apps/dto/create-app.dto';
 
 /**
  * Controller for managing client operations.
@@ -67,7 +68,31 @@ export class ClientsController {
    * @returns Generated API key linked to the client.
    */
   @Post('/key')
-  generateApiKey(@Body() data: { clientId: string, title: string, description?: string }) {
-    return this.clientsService.generateApiKey(data.clientId, data.title, data.description);
+  generateApiKey(@Body() data: {
+    clientId: string,
+    description?: string,
+    subscriptionType: ApiKeySubscriptions,
+    monthlyFee?: number,
+    isFree?: boolean
+    appId: string
+  }) {
+    return this.clientsService.generateApiKey(
+      data.clientId,
+      data.description,
+      data.subscriptionType,
+      data.monthlyFee,
+      data.isFree,
+      data.appId
+    );
+  }
+
+  @Get('/key/:clientId')
+  getAllKeysForClient(@Param('clientId') clientId: string) {
+    return this.clientsService.listAllApiKeysForClient(clientId)
+  }
+
+  @Post('/key/analytics/reqs')
+  getReqInYear(@Body() { clientId, year }: { clientId: string, year: number }) {
+    return this.clientsService.getMonthlyReportsCounts(clientId, year)
   }
 }

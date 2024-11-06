@@ -8,12 +8,12 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AppsService } from './apps.service';
-import { CreateAppDto } from './dto/create-app.dto';
+import { CreateAppDto, ReportProgressComment, ReportProgressDto, StatusReportApp } from './dto/create-app.dto';
 import { ScalarReportApp } from 'types/Apps';
 
 @Controller('apps')
 export class AppsController {
-  constructor(private readonly appsService: AppsService) {}
+  constructor(private readonly appsService: AppsService) { }
 
   @Post()
   create(@Body() createAppDto: CreateAppDto) {
@@ -35,10 +35,33 @@ export class AppsController {
     return this.appsService.listReportsForApp(appId);
   }
 
+  // Nuevo - Agregar progreso a un reporte
+  @Post('report/progress')
+  addReportProgress(@Body() { data, newStatus }: { data: ReportProgressDto, newStatus?: StatusReportApp }) {
+    return this.appsService.addProgressToReport(data);
+  }
+
+  @Get('report/progress/:reportId')
+  allProgreesInReport(@Param('reportId') reportId: string) {
+    return this.appsService.getAllProgressInReport(reportId);
+  }
+
+  // Nuevo - Agregar comentario a un reporte
+  @Post('report/comment')
+  addReportComment(@Body() data: ReportProgressComment) {
+    return this.appsService.addCommentToReport(data);
+  }
+
   // Nuevo - Obtener todas las aplicaciones de un cliente
   @Get('client/:clientId')
   getAllAppsForClient(@Param('clientId') clientId: string) {
     return this.appsService.appsClient(clientId);
+  }
+
+  // Gestionar reporte con IA
+  @Post('report/ia/generate')
+  autReportApp(@Body() { errorMessage }: { errorMessage: string }) {
+    return this.appsService.iaAutReportApp(errorMessage)
   }
 
   // Nuevo - Actualizar información de una aplicación

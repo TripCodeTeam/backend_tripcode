@@ -1,10 +1,12 @@
-import { CreateAppDto } from './dto/create-app.dto';
+import { CreateAppDto, ReportProgressComment, ReportProgressDto, StatusReportApp } from './dto/create-app.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ScalarReportApp } from 'types/Apps';
 import { UpdateAppDto } from './dto/update-app.dto';
+import { HuggingfaceService } from 'src/huggingface/huggingface.service';
 export declare class AppsService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private ia;
+    constructor(prisma: PrismaService, ia: HuggingfaceService);
     create(createAppDto: CreateAppDto): Promise<{
         success: boolean;
         data: {
@@ -91,7 +93,7 @@ export declare class AppsService {
         error: string;
         data?: undefined;
     }>;
-    addReportToApp({ description, images, appId, clientId, }: ScalarReportApp): Promise<{
+    addReportToApp({ description, images, appId, clientId, apiKeyId, }: ScalarReportApp): Promise<{
         success: boolean;
         data: {
             id: string;
@@ -101,6 +103,7 @@ export declare class AppsService {
             description: string;
             status: import(".prisma/client").$Enums.StatusIssue;
             appId: string;
+            apiKeyId: string;
             images: string[];
             priority: import(".prisma/client").$Enums.PriorityStatus;
         };
@@ -110,9 +113,78 @@ export declare class AppsService {
         error: string;
         data?: undefined;
     }>;
-    listReportsForApp(appId: string): Promise<{
+    addProgressToReport(data: ReportProgressDto, newStatus?: StatusReportApp): Promise<{
         success: boolean;
         data: {
+            status: import(".prisma/client").$Enums.StatusIssue;
+            id: string;
+            createdAt: Date;
+            description: string;
+            images: string[];
+            reportId: string;
+        };
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        data?: undefined;
+    }>;
+    getAllProgressInReport(reportId: string): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            createdAt: Date;
+            description: string;
+            status: import(".prisma/client").$Enums.StatusIssue;
+            images: string[];
+            reportId: string;
+        }[];
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        data?: undefined;
+    }>;
+    addCommentToReport(data: ReportProgressComment): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            createdAt: Date;
+            clientId: string;
+            images: string[];
+            reportId: string;
+            content: string;
+        };
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        data?: undefined;
+    }>;
+    iaAutReportApp(errorMessage: string): Promise<{
+        success: boolean;
+        data: import("src/huggingface/huggingface.service").ErrorAnalysis;
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        data?: undefined;
+    }>;
+    listReportsForApp(appId: string): Promise<{
+        success: boolean;
+        data: ({
+            app: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                clientId: string;
+                description: string | null;
+                status: import(".prisma/client").$Enums.StatusApp;
+                repositoryUrl: string | null;
+                deploymentUrl: string | null;
+            };
+        } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -120,9 +192,10 @@ export declare class AppsService {
             description: string;
             status: import(".prisma/client").$Enums.StatusIssue;
             appId: string;
+            apiKeyId: string;
             images: string[];
             priority: import(".prisma/client").$Enums.PriorityStatus;
-        }[];
+        })[];
         error?: undefined;
     } | {
         success: boolean;

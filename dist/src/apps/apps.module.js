@@ -11,13 +11,14 @@ const common_1 = require("@nestjs/common");
 const apps_service_1 = require("./apps.service");
 const apps_controller_1 = require("./apps.controller");
 const prisma_service_1 = require("../prisma/prisma.service");
+const huggingface_service_1 = require("../huggingface/huggingface.service");
 let AppsModule = class AppsModule {
 };
 exports.AppsModule = AppsModule;
 exports.AppsModule = AppsModule = __decorate([
     (0, common_1.Module)({
         controllers: [apps_controller_1.AppsController],
-        providers: [apps_service_1.AppsService, prisma_service_1.PrismaService],
+        providers: [apps_service_1.AppsService, prisma_service_1.PrismaService, huggingface_service_1.HuggingfaceService],
     })
 ], AppsModule);
 //# sourceMappingURL=apps.module.js.map

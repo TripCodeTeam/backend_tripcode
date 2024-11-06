@@ -32,8 +32,20 @@ let AppsController = class AppsController {
     listAppReports(appId) {
         return this.appsService.listReportsForApp(appId);
     }
+    addReportProgress({ data, newStatus }) {
+        return this.appsService.addProgressToReport(data);
+    }
+    allProgreesInReport(reportId) {
+        return this.appsService.getAllProgressInReport(reportId);
+    }
+    addReportComment(data) {
+        return this.appsService.addCommentToReport(data);
+    }
     getAllAppsForClient(clientId) {
         return this.appsService.appsClient(clientId);
+    }
+    autReportApp({ errorMessage }) {
+        return this.appsService.iaAutReportApp(errorMessage);
     }
     updateApp(appId, updateAppDto) {
         return this.appsService.updateAppById(appId, updateAppDto);
@@ -72,12 +84,40 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AppsController.prototype, "listAppReports", null);
 __decorate([
+    (0, common_1.Post)('report/progress'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AppsController.prototype, "addReportProgress", null);
+__decorate([
+    (0, common_1.Get)('report/progress/:reportId'),
+    __param(0, (0, common_1.Param)('reportId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AppsController.prototype, "allProgreesInReport", null);
+__decorate([
+    (0, common_1.Post)('report/comment'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AppsController.prototype, "addReportComment", null);
+__decorate([
     (0, common_1.Get)('client/:clientId'),
     __param(0, (0, common_1.Param)('clientId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AppsController.prototype, "getAllAppsForClient", null);
+__decorate([
+    (0, common_1.Post)('report/ia/generate'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AppsController.prototype, "autReportApp", null);
 __decorate([
     (0, common_1.Patch)('/:appId'),
     __param(0, (0, common_1.Param)('appId')),

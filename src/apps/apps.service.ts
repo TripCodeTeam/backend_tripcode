@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAppDto } from './dto/create-app.dto';
+import { CreateAppDto, ReportProgressComment, ReportProgressDto, StatusApp, StatusReportApp } from './dto/create-app.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ScalarReportApp } from 'types/Apps';
 import { UpdateAppDto } from './dto/update-app.dto';
+import { HuggingfaceService } from 'src/huggingface/huggingface.service';
 
 @Injectable()
 /** 
@@ -11,7 +12,11 @@ import { UpdateAppDto } from './dto/update-app.dto';
  * and managing reports for each application.
  */
 export class AppsService {
-  constructor(private prisma: PrismaService) { }
+
+  constructor(
+    private prisma: PrismaService,
+    private ia: HuggingfaceService
+  ) { }
 
   /**
    * Creates a new application.
@@ -71,6 +76,8 @@ export class AppsService {
         where: { clientId },
       });
 
+      console.log(client_apps)
+
       if (client_apps) {
         return { success: true, data: client_apps };
       }
@@ -113,6 +120,7 @@ export class AppsService {
     images,
     appId,
     clientId,
+    apiKeyId,
   }: ScalarReportApp) {
     try {
       const newReport = await this.prisma.reportIssue.create({
@@ -121,6 +129,8 @@ export class AppsService {
           images,
           appId,
           clientId,
+          apiKeyId
+          
         },
       });
 
@@ -134,6 +144,98 @@ export class AppsService {
     }
   }
 
+  async addProgressToReport(data: ReportProgressDto, newStatus?: StatusReportApp) {
+    try {
+      if (newStatus) {
+        const newProgress = await this.prisma.reportProgress.create({
+          data: {
+            reportId: data.reportId,
+            description: data.description,
+            images: data.images,
+          },
+        });
+
+        const changeStatusReport = await this.prisma.reportIssue.update(
+          {
+            where: { id: data.reportId }, data: {
+              status: newStatus
+            }
+          }
+        )
+
+        if (changeStatusReport) return { success: true, data: { ...newProgress, status: changeStatusReport.status } }
+      } else {
+        const newProgress = await this.prisma.reportProgress.create({
+          data: {
+            reportId: data.reportId,
+            description: data.description,
+            images: data.images,
+          },
+        });
+
+        const changeStatusReport = await this.prisma.reportIssue.update(
+          {
+            where: { id: data.reportId }, data: {
+              status: "inProgress"
+            }
+          }
+        )
+
+        if (changeStatusReport) return { success: true, data: newProgress };
+
+
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        return { success: false, error: error.message };
+      }
+    }
+  }
+
+  async getAllProgressInReport(reportId: string) {
+    try {
+      const response = await this.prisma.reportProgress.findMany({ where: { reportId } })
+
+      if (response) {
+        return { success: true, data: response }
+      }
+
+    } catch (error) {
+      if (error instanceof Error) {
+        return { success: false, error: error.message }
+      }
+    }
+  }
+
+  async addCommentToReport(data: ReportProgressComment) {
+    try {
+      const newComment = await this.prisma.reportComment.create({
+        data: {
+          reportId: data.reportId,
+          clientId: data.clientId,
+          content: data.content,
+          images: data.images,
+        },
+      });
+      return { success: true, data: newComment };
+    } catch (error) {
+      if (error instanceof Error) {
+        return { success: false, error: error.message };
+      }
+    }
+  }
+
+  async iaAutReportApp(errorMessage: string) {
+    try {
+      const response = await this.ia.analyzeError(errorMessage)
+      if (response) return { success: true, data: response }
+    } catch (error) {
+      if (error instanceof Error) {
+        return { success: false, error: error.message }
+      }
+    }
+  }
+
   /**
    * Retrieves all reports associated with a specific application.
    * @param appId - The unique identifier of the application.
@@ -143,6 +245,7 @@ export class AppsService {
     try {
       const listReports = await this.prisma.reportIssue.findMany({
         where: { appId },
+        include: { app: true }
       });
 
       if (listReports) {

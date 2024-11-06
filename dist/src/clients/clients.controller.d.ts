@@ -1,6 +1,7 @@
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { ApiKeySubscriptions } from 'src/apps/dto/create-app.dto';
 export declare class ClientsController {
     private readonly clientsService;
     constructor(clientsService: ClientsService);
@@ -82,8 +83,11 @@ export declare class ClientsController {
     }>;
     generateApiKey(data: {
         clientId: string;
-        title: string;
         description?: string;
+        subscriptionType: ApiKeySubscriptions;
+        monthlyFee?: number;
+        isFree?: boolean;
+        appId: string;
     }): Promise<{
         success: boolean;
         data: {
@@ -95,7 +99,33 @@ export declare class ClientsController {
             status: import(".prisma/client").$Enums.ApiKeyStatus;
             key: string;
             title: string;
-            appId: string | null;
+            appId: string;
         };
+    }>;
+    getAllKeysForClient(clientId: string): Promise<{
+        success: boolean;
+        data: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            clientId: string;
+            description: string | null;
+            status: import(".prisma/client").$Enums.ApiKeyStatus;
+            key: string;
+            title: string;
+            appId: string;
+        }[];
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        data?: undefined;
+    }>;
+    getReqInYear({ clientId, year }: {
+        clientId: string;
+        year: number;
+    }): Promise<{
+        success: boolean;
+        data: any[];
     }>;
 }

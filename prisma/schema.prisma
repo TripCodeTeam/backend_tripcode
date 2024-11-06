@@ -9,17 +9,20 @@ datasource db {
 }
 
 model Clients {
-    id          String        @id @default(uuid()) @map("_id")
-    companyName String // Nombre de la empresa
-    email       String        @unique
-    password    String
-    contacts    Contact[] // Lista de contactos adicionales
-    logoCompany String? // URL del logo de la empresa
-    apps        AppDevelop[] // Relación con las aplicaciones desarrolladas para este cliente
-    reports     ReportIssue[] // Relación con los reportes de errores realizados por este cliente
-    apiKeys     ApiKey[] // Relación con las API Keys del cliente
-    createdAt   DateTime      @default(now())
-    updatedAt   DateTime      @updatedAt
+    id            String          @id @default(uuid()) @map("_id")
+    companyName   String // Nombre de la empresa
+    email         String          @unique
+    password      String
+    contacts      Contact[] // Lista de contactos adicionales
+    logoCompany   String? // URL del logo de la empresa
+    apps          AppDevelop[] // Relación con las aplicaciones desarrolladas para este cliente
+    reports       ReportIssue[] // Relación con los reportes de errores realizados por este cliente
+    apiKeys       ApiKey[] // Relación con las API Keys del cliente
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
+    ReportComment ReportComment[]
+    ApiKeyPrice   ApiKeyPrice[]
+    ApiInvoice    ApiInvoice[]
 }
 
 model Contact {
@@ -47,31 +50,89 @@ model AppDevelop {
 }
 
 model ApiKey {
-    id          String       @id @default(uuid()) @map("_id")
-    key         String       @unique // La clave de API generada
-    status      ApiKeyStatus @default(active) // Estado de la clave API
+    id          String        @id @default(uuid()) @map("_id")
+    key         String        @unique // La clave de API generada
+    status      ApiKeyStatus  @default(active) // Estado de la clave API
     title       String
     description String?
     clientId    String // Relación con el cliente que posee la clave
-    client      Clients      @relation(fields: [clientId], references: [id])
-    appId       String? // Relación opcional con una aplicación en particular
-    app         AppDevelop?  @relation(fields: [appId], references: [id])
-    createdAt   DateTime     @default(now())
-    updatedAt   DateTime     @updatedAt
+    client      Clients       @relation(fields: [clientId], references: [id])
+    appId       String
+    app         AppDevelop?   @relation(fields: [appId], references: [id])
+    ApiKeyPrice ApiKeyPrice[]
+    ReportIssue ReportIssue[]
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+    ApiInvoice  ApiInvoice[]
 }
 
+model ApiKeyPrice {
+    id               String              @id @default(uuid()) @map("_id")
+    apiKey           ApiKey              @relation(fields: [apiKeyId], references: [id])
+    apiKeyId         String
+    client           Clients             @relation(fields: [clientId], references: [id])
+    clientId         String
+    subscriptionType ApiKeySubscriptions // Tipo de suscripción (BUG_SUPPORT o FEATURE_DEVELOPMENT)
+    monthlyFee       Float               @default(100) // Tarifa mensual por la suscripción de la API
+    isFree           Boolean             @default(false)
+    createdAt        DateTime            @default(now())
+    updatedAt        DateTime            @updatedAt
+}
+
+model ApiInvoice {
+    id            String        @id @default(uuid()) @map("_id")
+    clientId      String // Relación con el cliente al que pertenece la factura
+    client        Clients       @relation(fields: [clientId], references: [id])
+    apiKeyId      String // Relación con la clave de API facturada
+    apiKey        ApiKey        @relation(fields: [apiKeyId], references: [id])
+    invoiceNumber String        @unique // Número de factura único
+    month         Int // Mes de facturación (1-12)
+    year          Int // Año de facturación
+    totalAmount   Float // Monto total de la factura
+    paymentStatus PaymentStatus @default(pending) // Estado de pago de la factura
+    createdAt     DateTime      @default(now())
+    updatedAt     DateTime      @updatedAt
+}
+
+/// Reports in app - Workflow
+
 model ReportIssue {
-    id          String         @id @default(uuid()) @map("_id")
-    description String // Descripción detallada del error
-    images      String[] // URLs de las imágenes que el cliente sube para describir el error
-    status      StatusIssue    @default(open) // Estado del reporte de error
-    priority    PriorityStatus @default(low) // Prioridad del reporte de error
-    appId       String // ID de la aplicación relacionada con el reporte
-    app         AppDevelop     @relation(fields: [appId], references: [id])
-    clientId    String // ID del cliente que reporta el error
-    client      Clients        @relation(fields: [clientId], references: [id])
-    createdAt   DateTime       @default(now())
-    updatedAt   DateTime       @updatedAt
+    id             String           @id @default(uuid()) @map("_id")
+    description    String // Descripción detallada del error
+    images         String[] // URLs de las imágenes que el cliente sube para describir el error
+    status         StatusIssue      @default(open) // Estado del reporte de error
+    priority       PriorityStatus   @default(low) // Prioridad del reporte de error
+    appId          String // ID de la aplicación relacionada con el reporte
+    app            AppDevelop       @relation(fields: [appId], references: [id])
+    clientId       String // ID del cliente que reporta el error
+    client         Clients          @relation(fields: [clientId], references: [id])
+    apiKey         ApiKey           @relation(fields: [apiKeyId], references: [id])
+    apiKeyId       String
+    ReportProgress ReportProgress[]
+    ReportComment  ReportComment[]
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+}
+
+model ReportProgress {
+    id          String      @id @default(uuid()) @map("_id")
+    reportId    String // ID del reporte asociado
+    report      ReportIssue @relation(fields: [reportId], references: [id])
+    status      StatusIssue @default(inProgress)
+    description String // Descripción detallada del paso
+    images      String[] // Imágenes relacionadas con el paso
+    createdAt   DateTime    @default(now()) // Fecha de creación del paso
+}
+
+model ReportComment {
+    id        String      @id @default(uuid()) @map("_id")
+    reportId  String // ID del reporte asociado
+    report    ReportIssue @relation(fields: [reportId], references: [id])
+    clientId  String
+    client    Clients     @relation(fields: [clientId], references: [id])
+    content   String // Contenido del comentario
+    images    String[] // Imágenes opcionales que acompañan al comentario
+    createdAt DateTime    @default(now()) // Fecha de creación del comentario
 }
 
 // Enum para el estado del reporte de error
@@ -103,4 +164,15 @@ enum ApiKeyStatus {
     active // La clave está activa y puede ser usada
     revoked // La clave ha sido revocada y no es válida
     expired // La clave ha caducado
+}
+
+enum ApiKeySubscriptions {
+    BUG_SUPPORT // Soporte para bugs con facturación por cada error reportado.
+    FEATURE_DEVELOPMENT // Desarrollo de nuevas funcionalidades con facturación por cada solicitud.
+}
+
+enum PaymentStatus {
+    pending // Pago pendiente
+    paid // Pago completado
+    overdue // Pago atrasado
 }

@@ -3,4 +3,5 @@ export type ScalarReportApp = {
     images: string[];
     appId: string;
     clientId: string;
+    apiKeyId: string;
 };
