@@ -23,11 +23,11 @@ export declare class AuthController {
             success: boolean;
             data: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 companyName: string;
                 email: string;
                 logoCompany: string | null;
-                createdAt: Date;
-                updatedAt: Date;
             };
             error?: undefined;
         } | {

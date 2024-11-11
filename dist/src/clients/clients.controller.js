@@ -45,6 +45,9 @@ let ClientsController = class ClientsController {
     getReqInYear({ clientId, year }) {
         return this.clientsService.getMonthlyReportsCounts(clientId, year);
     }
+    getServicesClient(clientId) {
+        return this.clientsService.getServicesOfClients(clientId);
+    }
 };
 exports.ClientsController = ClientsController;
 __decorate([
@@ -103,6 +106,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "getReqInYear", null);
+__decorate([
+    (0, common_1.Get)('/Services/:clientId'),
+    __param(0, (0, common_1.Param)('clientId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ClientsController.prototype, "getServicesClient", null);
 exports.ClientsController = ClientsController = __decorate([
     (0, common_1.Controller)('clients'),
     __metadata("design:paramtypes", [clients_service_1.ClientsService])

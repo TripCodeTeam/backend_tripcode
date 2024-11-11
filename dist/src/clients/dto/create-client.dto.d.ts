@@ -16,3 +16,4 @@ export type ContactsClientTypes = {
     clientId: string;
     client?: CreateAppDto;
 };
+export type PaymentStatus = "pending" | "paid" | "overdue";

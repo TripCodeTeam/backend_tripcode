@@ -9,12 +9,12 @@ export declare class ClientsService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             companyName: string;
             email: string;
             password: string;
             logoCompany: string | null;
-            createdAt: Date;
-            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -26,12 +26,12 @@ export declare class ClientsService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             companyName: string;
             email: string;
             password: string;
             logoCompany: string | null;
-            createdAt: Date;
-            updatedAt: Date;
         }[];
         error?: undefined;
     } | {
@@ -50,22 +50,22 @@ export declare class ClientsService {
     }>;
     findByEmail(email: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         companyName: string;
         email: string;
         password: string;
         logoCompany: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getSafeUser(userId: string): Promise<{
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             companyName: string;
             email: string;
             logoCompany: string | null;
-            createdAt: Date;
-            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -78,12 +78,12 @@ export declare class ClientsService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             companyName: string;
             email: string;
             password: string;
             logoCompany: string | null;
-            createdAt: Date;
-            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -95,12 +95,12 @@ export declare class ClientsService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             companyName: string;
             email: string;
             password: string;
             logoCompany: string | null;
-            createdAt: Date;
-            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -112,28 +112,28 @@ export declare class ClientsService {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.ApiKeyStatus;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            appId: string;
             key: string;
             title: string;
-            appId: string;
         };
     }>;
     listAllApiKeysForClient(clientId: string): Promise<{
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.ApiKeyStatus;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            appId: string;
             key: string;
             title: string;
-            appId: string;
         }[];
         error?: undefined;
     } | {
@@ -145,20 +145,62 @@ export declare class ClientsService {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.ApiKeyStatus;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            appId: string;
             key: string;
             title: string;
-            appId: string;
         }[];
     }>;
     supportApiReqsForClient(clientId: string, month: number, year: number): Promise<number>;
     getMonthlyReportsCounts(clientId: string, year: number): Promise<{
         success: boolean;
         data: any[];
+    }>;
+    getServicesOfClients(clientId: string): Promise<{
+        success: boolean;
+        data: ({
+            apiKey: {
+                app: {
+                    id: string;
+                    name: string;
+                    description: string | null;
+                    status: import(".prisma/client").$Enums.StatusApp;
+                    repositoryUrl: string | null;
+                    deploymentUrl: string | null;
+                    clientId: string;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+            } & {
+                id: string;
+                description: string | null;
+                status: import(".prisma/client").$Enums.ApiKeyStatus;
+                clientId: string;
+                createdAt: Date;
+                updatedAt: Date;
+                appId: string;
+                key: string;
+                title: string;
+            };
+        } & {
+            id: string;
+            clientId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            apiKeyId: string;
+            subscriptionType: import(".prisma/client").$Enums.ApiKeySubscriptions;
+            monthlyFee: number;
+            isFree: boolean;
+        })[];
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        data?: undefined;
     }>;
     private generateRandomApiKey;
 }

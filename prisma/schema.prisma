@@ -73,29 +73,55 @@ model ApiKeyPrice {
     client           Clients             @relation(fields: [clientId], references: [id])
     clientId         String
     subscriptionType ApiKeySubscriptions // Tipo de suscripción (BUG_SUPPORT o FEATURE_DEVELOPMENT)
-    monthlyFee       Float               @default(100) // Tarifa mensual por la suscripción de la API
+    monthlyFee       Float               @default(5000000) // Tarifa mensual por la suscripción de la API
     isFree           Boolean             @default(false)
+    fees             Int
     createdAt        DateTime            @default(now())
     updatedAt        DateTime            @updatedAt
 }
 
 model ApiInvoice {
-    id            String        @id @default(uuid()) @map("_id")
+    id            String         @id @default(uuid()) @map("_id")
     clientId      String // Relación con el cliente al que pertenece la factura
-    client        Clients       @relation(fields: [clientId], references: [id])
+    client        Clients        @relation(fields: [clientId], references: [id])
     apiKeyId      String // Relación con la clave de API facturada
-    apiKey        ApiKey        @relation(fields: [apiKeyId], references: [id])
-    invoiceNumber String        @unique // Número de factura único
+    apiKey        ApiKey         @relation(fields: [apiKeyId], references: [id])
+    indexFee      Int
+    completeFees  Int            @default(0)
     month         Int // Mes de facturación (1-12)
     year          Int // Año de facturación
     totalAmount   Float // Monto total de la factura
-    paymentStatus PaymentStatus @default(pending) // Estado de pago de la factura
-    createdAt     DateTime      @default(now())
-    updatedAt     DateTime      @updatedAt
+    paymentStatus PaymentStatus  @default(pending) // Estado de pago de la factura
+    createdAt     DateTime       @default(now())
+    updatedAt     DateTime       @updatedAt
+    ProofPayment  ProofPayment[]
+}
+
+model ProofPayment {
+    id                  String                @id @default(uuid()) @map("_id")
+    ApiInvoice          ApiInvoice            @relation(fields: [apiInvoiceId], references: [id])
+    apiInvoiceId        String
+    indexFee            Int
+    value               Float
+    ProofIMagesRegister ProofIMagesRegister[]
+    createdAt           DateTime              @default(now())
+    updatedAt           DateTime              @updatedAt
+}
+
+model ProofIMagesRegister {
+    id             String       @id @default(uuid()) @map("_id")
+    proofPayment   ProofPayment @relation(fields: [proofPaymentId], references: [id])
+    proofPaymentId String
+    indexFee       String
+    image          String
+    value          Float
+    isVerify       Boolean      @default(false)
+    finalInvoice   String?
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt
 }
 
 /// Reports in app - Workflow
-
 model ReportIssue {
     id             String           @id @default(uuid()) @map("_id")
     description    String // Descripción detallada del error

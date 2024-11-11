@@ -76,9 +76,52 @@ export type ApiKeyPrice = {
   clientId?: string
   subscriptionType: ApiKeySubscriptions
   monthlyFee: number
+  fees: number
   isFree: boolean
   createdAt: Date
   updatedAt: Date
+}
+
+export type ApiInvoices = {
+  id?: String,
+  clientId: string,
+  client?: CreateClientDto,
+  apiKeyId: string,
+  apiKey: ApiKeyApp,
+  invoiceNumber: string,
+  month: number,
+  year: number,
+  totalAmount: number,
+  indexFee: number
+  completeFees: number,
+  paymentStatus: PaymentStatus,
+  ProofPayment?: ProofPayment[]
+  createdAt?: Date,
+  updatedAt?: Date
+}
+
+export type ProofPayment = {
+  id?: string,
+  ApiInvoice?: ApiInvoices
+  ApiInvoiceId: string
+  indexFee: number
+  value: number
+  ProofIMagesRegister: imagesProofRegister[]
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+export type imagesProofRegister = {
+  id?: string
+  proofPayment?: ProofPayment
+  proofPaymentId: String
+  indexFee: number
+  value: number
+  isVerify: boolean
+  finalInvoice?: string
+  image: string
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export type StatusApp =
@@ -94,3 +137,5 @@ export type StatusReportApp = 'open' | 'inProgress' | 'resolved' | 'closed';
 export type PriorityStatusReportApp = 'low' | 'medium' | 'high' | 'critical';
 
 export type ApiKeySubscriptions = "BUG_SUPPORT" | "FEATURE_DEVELOPMENT"
+
+export type PaymentStatus = "pending" | "paid" | "overdue"

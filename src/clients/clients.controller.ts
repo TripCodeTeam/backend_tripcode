@@ -95,4 +95,10 @@ export class ClientsController {
   getReqInYear(@Body() { clientId, year }: { clientId: string, year: number }) {
     return this.clientsService.getMonthlyReportsCounts(clientId, year)
   }
+
+  // Services of client
+  @Get('/Services/:clientId')
+  getServicesClient(@Param('clientId') clientId: string) {
+    return this.clientsService.getServicesOfClients(clientId)
+  }
 }

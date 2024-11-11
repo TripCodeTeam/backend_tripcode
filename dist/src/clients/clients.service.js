@@ -249,6 +249,25 @@ let ClientsService = class ClientsService {
         }
         return { success: true, data };
     }
+    async getServicesOfClients(clientId) {
+        try {
+            const services = await this.prisma.apiKeyPrice.findMany({
+                where: { clientId },
+                include: {
+                    apiKey: {
+                        include: { app: true }
+                    }
+                }
+            });
+            if (services)
+                return { success: true, data: services };
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, error: error.message };
+            }
+        }
+    }
     generateRandomApiKey() {
         return Math.random().toString(36).substring(2, 15);
     }

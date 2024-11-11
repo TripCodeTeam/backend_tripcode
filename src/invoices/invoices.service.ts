@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
 import { Cron } from '@nestjs/schedule';
 import { PaymentStatus } from '@prisma/client';
+import { generateApiKey } from 'handlers/Api_key_generate';
 
 @Injectable()
 export class ApiInvoiceService {
@@ -35,7 +36,7 @@ export class ApiInvoiceService {
                         data: {
                             clientId: client.id,
                             apiKeyId: apiKey.id,
-                            invoiceNumber: `INV-${Date.now()}`, // Número de factura único
+                            invoiceNumber: `${generateApiKey()}`, // Número de factura único
                             month: today.getMonth() + 1,
                             year: today.getFullYear(),
                             totalAmount: monthlyFee,
