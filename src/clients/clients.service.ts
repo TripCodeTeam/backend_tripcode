@@ -1,18 +1,19 @@
 // ClientsService.ts
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { startOfMonth, endOfMonth, format } from 'date-fns';
 import { ApiKeySubscriptions } from 'src/apps/dto/create-app.dto';
-import { Prisma } from '@prisma/client';
 
 /**
  * Service responsible for handling client operations.
  */
 @Injectable()
 export class ClientsService {
+  private readonly logger = new Logger(ClientsService.name);
+
   constructor(private prisma: PrismaService) { }
 
   /**
@@ -219,32 +220,63 @@ export class ClientsService {
     subscriptionType?: ApiKeySubscriptions,
     monthlyFee?: number,
     isFree?: boolean,
-    appId?: string
+    appId?: string,
+    fees?: number
   ) {
     const apiKey = this.generateRandomApiKey();
-    let titleApi: string | null = null
-    if (subscriptionType == "BUG_SUPPORT") titleApi = "Soporte 24/7"
-    if (subscriptionType == "FEATURE_DEVELOPMENT") titleApi = "Desarrollo de nuevas funcionalidades"
+    let titleApi: string | null = null;
 
+    if (subscriptionType === "BUG_SUPPORT") titleApi = "Soporte 24/7";
+    if (subscriptionType === "FEATURE_DEVELOPMENT") titleApi = "Desarrollo de nuevas funcionalidades";
+
+    // Creamos el ApiKey junto con el ApiKeyPrice
     const key = await this.prisma.apiKey.create({
       data: {
         key: apiKey,
         title: titleApi,
         description,
         client: { connect: { id: clientId } },
-        app: { connect: { id: appId } },
+        ...(appId ? { app: { connect: { id: appId } } } : {}),
         ApiKeyPrice: {
           create: {
             subscriptionType,
-            monthlyFee: monthlyFee || 0,
+            monthlyFee: monthlyFee,
             isFree: isFree || false,
-            client: { connect: { id: clientId } }
+            fees: isFree ? 0 : fees,
+            clientId
           }
         }
       },
-
+      include: {
+        ApiKeyPrice: true,
+        client: true,
+        app: true
+      }
     });
-    return { success: true, data: key }
+
+    // Si el servicio no es gratuito, creamos la primera factura
+    if (!isFree) {
+      const apiKeyPrice = key.ApiKeyPrice[0];
+      const today = new Date();
+
+      await this.prisma.apiInvoice.create({
+        data: {
+          clientId,
+          apiKeyId: key.id,
+          indexFee: 1,
+          month: today.getMonth() + 1,
+          year: today.getFullYear(),
+          totalAmount: monthlyFee,
+          paymentStatus: 'pending'
+        }
+      });
+
+      this.logger.log(`First invoice created for client ${key.client.email} and ApiKey ${key.key}`);
+    } else {
+      this.logger.log(`ApiKey generated for client ${key.client.email} with a free plan.`);
+    }
+
+    return { success: true, data: key };
   }
 
   async listAllApiKeysForClient(clientId: string) {

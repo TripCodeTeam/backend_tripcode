@@ -9,12 +9,12 @@ export declare class ClientsController {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             companyName: string;
             email: string;
             password: string;
             logoCompany: string | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -26,12 +26,12 @@ export declare class ClientsController {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             companyName: string;
             email: string;
             password: string;
             logoCompany: string | null;
+            createdAt: Date;
+            updatedAt: Date;
         }[];
         error?: undefined;
     } | {
@@ -43,11 +43,11 @@ export declare class ClientsController {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             companyName: string;
             email: string;
             logoCompany: string | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -59,12 +59,12 @@ export declare class ClientsController {
         success: boolean;
         data: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             companyName: string;
             email: string;
             password: string;
             logoCompany: string | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -88,32 +88,65 @@ export declare class ClientsController {
         monthlyFee?: number;
         isFree?: boolean;
         appId: string;
+        fees: number;
     }): Promise<{
         success: boolean;
         data: {
+            ApiKeyPrice: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                clientId: string | null;
+                subscriptionType: import(".prisma/client").$Enums.ApiKeySubscriptions;
+                monthlyFee: number;
+                isFree: boolean;
+                fees: number;
+                apiKeyId: string | null;
+            }[];
+            client: {
+                id: string;
+                companyName: string;
+                email: string;
+                password: string;
+                logoCompany: string | null;
+                createdAt: Date;
+                updatedAt: Date;
+            };
+            app: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                clientId: string;
+                description: string | null;
+                status: import(".prisma/client").$Enums.StatusApp;
+                repositoryUrl: string | null;
+                deploymentUrl: string | null;
+            };
+        } & {
             id: string;
-            description: string | null;
-            status: import(".prisma/client").$Enums.ApiKeyStatus;
-            clientId: string;
             createdAt: Date;
             updatedAt: Date;
-            appId: string;
+            clientId: string;
+            description: string | null;
+            status: import(".prisma/client").$Enums.ApiKeyStatus;
             key: string;
             title: string;
+            appId: string | null;
         };
     }>;
     getAllKeysForClient(clientId: string): Promise<{
         success: boolean;
         data: {
             id: string;
-            description: string | null;
-            status: import(".prisma/client").$Enums.ApiKeyStatus;
-            clientId: string;
             createdAt: Date;
             updatedAt: Date;
-            appId: string;
+            clientId: string;
+            description: string | null;
+            status: import(".prisma/client").$Enums.ApiKeyStatus;
             key: string;
             title: string;
+            appId: string | null;
         }[];
         error?: undefined;
     } | {
@@ -134,35 +167,36 @@ export declare class ClientsController {
             apiKey: {
                 app: {
                     id: string;
+                    createdAt: Date;
+                    updatedAt: Date;
                     name: string;
+                    clientId: string;
                     description: string | null;
                     status: import(".prisma/client").$Enums.StatusApp;
                     repositoryUrl: string | null;
                     deploymentUrl: string | null;
-                    clientId: string;
-                    createdAt: Date;
-                    updatedAt: Date;
                 };
             } & {
                 id: string;
-                description: string | null;
-                status: import(".prisma/client").$Enums.ApiKeyStatus;
-                clientId: string;
                 createdAt: Date;
                 updatedAt: Date;
-                appId: string;
+                clientId: string;
+                description: string | null;
+                status: import(".prisma/client").$Enums.ApiKeyStatus;
                 key: string;
                 title: string;
+                appId: string | null;
             };
         } & {
             id: string;
-            clientId: string;
             createdAt: Date;
             updatedAt: Date;
-            apiKeyId: string;
+            clientId: string | null;
             subscriptionType: import(".prisma/client").$Enums.ApiKeySubscriptions;
             monthlyFee: number;
             isFree: boolean;
+            fees: number;
+            apiKeyId: string | null;
         })[];
         error?: undefined;
     } | {

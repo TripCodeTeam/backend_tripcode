@@ -11,14 +11,14 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
+            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.StatusApp;
             repositoryUrl: string | null;
             deploymentUrl: string | null;
-            clientId: string;
-            createdAt: Date;
-            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -30,14 +30,14 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
+            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.StatusApp;
             repositoryUrl: string | null;
             deploymentUrl: string | null;
-            clientId: string;
-            createdAt: Date;
-            updatedAt: Date;
         };
         error?: undefined;
     } | {
@@ -49,14 +49,14 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
+            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.StatusApp;
             repositoryUrl: string | null;
             deploymentUrl: string | null;
-            clientId: string;
-            createdAt: Date;
-            updatedAt: Date;
         }[];
         error?: undefined;
     } | {
@@ -69,23 +69,23 @@ export declare class AppsService {
         data: ({
             client: {
                 id: string;
-                createdAt: Date;
-                updatedAt: Date;
                 companyName: string;
                 email: string;
                 password: string;
                 logoCompany: string | null;
+                createdAt: Date;
+                updatedAt: Date;
             };
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
+            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.StatusApp;
             repositoryUrl: string | null;
             deploymentUrl: string | null;
-            clientId: string;
-            createdAt: Date;
-            updatedAt: Date;
         })[];
         error?: undefined;
     } | {
@@ -97,15 +97,15 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
-            description: string;
-            status: import(".prisma/client").$Enums.StatusIssue;
-            clientId: string;
             createdAt: Date;
             updatedAt: Date;
-            images: string[];
-            priority: import(".prisma/client").$Enums.PriorityStatus;
+            clientId: string;
+            description: string;
+            status: import(".prisma/client").$Enums.StatusIssue;
             appId: string;
             apiKeyId: string;
+            images: string[];
+            priority: import(".prisma/client").$Enums.PriorityStatus;
         };
         error?: undefined;
     } | {
@@ -118,8 +118,8 @@ export declare class AppsService {
         data: {
             status: import(".prisma/client").$Enums.StatusIssue;
             id: string;
-            description: string;
             createdAt: Date;
+            description: string;
             images: string[];
             reportId: string;
         };
@@ -133,9 +133,9 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
             description: string;
             status: import(".prisma/client").$Enums.StatusIssue;
-            createdAt: Date;
             images: string[];
             reportId: string;
         }[];
@@ -149,8 +149,8 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
-            clientId: string;
             createdAt: Date;
+            clientId: string;
             images: string[];
             reportId: string;
             content: string;
@@ -175,26 +175,26 @@ export declare class AppsService {
         data: ({
             app: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 name: string;
+                clientId: string;
                 description: string | null;
                 status: import(".prisma/client").$Enums.StatusApp;
                 repositoryUrl: string | null;
                 deploymentUrl: string | null;
-                clientId: string;
-                createdAt: Date;
-                updatedAt: Date;
             };
         } & {
             id: string;
-            description: string;
-            status: import(".prisma/client").$Enums.StatusIssue;
-            clientId: string;
             createdAt: Date;
             updatedAt: Date;
-            images: string[];
-            priority: import(".prisma/client").$Enums.PriorityStatus;
+            clientId: string;
+            description: string;
+            status: import(".prisma/client").$Enums.StatusIssue;
             appId: string;
             apiKeyId: string;
+            images: string[];
+            priority: import(".prisma/client").$Enums.PriorityStatus;
         })[];
         error?: undefined;
     } | {
@@ -206,14 +206,14 @@ export declare class AppsService {
         success: boolean;
         data: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             name: string;
+            clientId: string;
             description: string | null;
             status: import(".prisma/client").$Enums.StatusApp;
             repositoryUrl: string | null;
             deploymentUrl: string | null;
-            clientId: string;
-            createdAt: Date;
-            updatedAt: Date;
         };
         error?: undefined;
     } | {

@@ -13,13 +13,13 @@ model Clients {
     companyName   String // Nombre de la empresa
     email         String          @unique
     password      String
-    contacts      Contact[] // Lista de contactos adicionales
     logoCompany   String? // URL del logo de la empresa
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
+    contacts      Contact[] // Lista de contactos adicionales
     apps          AppDevelop[] // Relación con las aplicaciones desarrolladas para este cliente
     reports       ReportIssue[] // Relación con los reportes de errores realizados por este cliente
     apiKeys       ApiKey[] // Relación con las API Keys del cliente
-    createdAt     DateTime        @default(now())
-    updatedAt     DateTime        @updatedAt
     ReportComment ReportComment[]
     ApiKeyPrice   ApiKeyPrice[]
     ApiInvoice    ApiInvoice[]
@@ -57,7 +57,7 @@ model ApiKey {
     description String?
     clientId    String // Relación con el cliente que posee la clave
     client      Clients       @relation(fields: [clientId], references: [id])
-    appId       String
+    appId       String?
     app         AppDevelop?   @relation(fields: [appId], references: [id])
     ApiKeyPrice ApiKeyPrice[]
     ReportIssue ReportIssue[]
@@ -68,10 +68,10 @@ model ApiKey {
 
 model ApiKeyPrice {
     id               String              @id @default(uuid()) @map("_id")
-    apiKey           ApiKey              @relation(fields: [apiKeyId], references: [id])
-    apiKeyId         String
-    client           Clients             @relation(fields: [clientId], references: [id])
-    clientId         String
+    apiKey           ApiKey?             @relation(fields: [apiKeyId], references: [id])
+    apiKeyId         String? // Cambiado a opcional
+    client           Clients?            @relation(fields: [clientId], references: [id])
+    clientId         String? // Cambiado a opcional
     subscriptionType ApiKeySubscriptions // Tipo de suscripción (BUG_SUPPORT o FEATURE_DEVELOPMENT)
     monthlyFee       Float               @default(5000000) // Tarifa mensual por la suscripción de la API
     isFree           Boolean             @default(false)

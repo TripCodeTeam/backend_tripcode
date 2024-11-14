@@ -16,6 +16,7 @@ const prisma_service_1 = require("./prisma/prisma.service");
 const config_1 = require("@nestjs/config");
 const jwt_auth_guard_1 = require("./auth/jwt.auth.guard");
 const auth_module_1 = require("./auth/auth.module");
+const invoices_module_1 = require("./invoices/invoices.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -26,6 +27,7 @@ exports.AppModule = AppModule = __decorate([
             apps_module_1.AppsModule,
             auth_module_1.AuthModule,
             config_1.ConfigModule.forRoot({ isGlobal: true }),
+            invoices_module_1.InvoicesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService, jwt_auth_guard_1.JwtAuthGuard],

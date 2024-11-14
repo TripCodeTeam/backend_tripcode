@@ -1,5 +1,5 @@
 // ClientsController.ts
-import { Controller, Post, Body, Get, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Put, Delete, Query } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
@@ -75,6 +75,7 @@ export class ClientsController {
     monthlyFee?: number,
     isFree?: boolean
     appId: string
+    fees: number
   }) {
     return this.clientsService.generateApiKey(
       data.clientId,
@@ -82,7 +83,8 @@ export class ClientsController {
       data.subscriptionType,
       data.monthlyFee,
       data.isFree,
-      data.appId
+      data.appId,
+      data.fees
     );
   }
 

@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ApiInvoiceService } from './invoices.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { MailModule } from 'src/mail/mail.module'; // Importa el módulo de correos
+import { InvoicesService } from './invoices.service';
+import { InvoicesController } from './invoices.controller';
+import { MailService } from 'src/mail/mail.service';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
-  imports: [MailModule],
-  providers: [ApiInvoiceService, PrismaService],
-  exports: [ApiInvoiceService],
+  controllers: [InvoicesController],
+  providers: [InvoicesService],
+  imports: [MailModule]
 })
-export class ApiInvoiceModule {}
+export class InvoicesModule {}

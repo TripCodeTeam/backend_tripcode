@@ -8,15 +8,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var ClientsService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const bcrypt = require("bcryptjs");
 const date_fns_1 = require("date-fns");
-let ClientsService = class ClientsService {
+let ClientsService = ClientsService_1 = class ClientsService {
     constructor(prisma) {
         this.prisma = prisma;
+        this.logger = new common_1.Logger(ClientsService_1.name);
     }
     async create(createClientDto) {
         try {
@@ -152,12 +154,12 @@ let ClientsService = class ClientsService {
             }
         }
     }
-    async generateApiKey(clientId, description, subscriptionType, monthlyFee, isFree, appId) {
+    async generateApiKey(clientId, description, subscriptionType, monthlyFee, isFree, appId, fees) {
         const apiKey = this.generateRandomApiKey();
         let titleApi = null;
-        if (subscriptionType == "BUG_SUPPORT")
+        if (subscriptionType === "BUG_SUPPORT")
             titleApi = "Soporte 24/7";
-        if (subscriptionType == "FEATURE_DEVELOPMENT")
+        if (subscriptionType === "FEATURE_DEVELOPMENT")
             titleApi = "Desarrollo de nuevas funcionalidades";
         const key = await this.prisma.apiKey.create({
             data: {
@@ -165,17 +167,42 @@ let ClientsService = class ClientsService {
                 title: titleApi,
                 description,
                 client: { connect: { id: clientId } },
-                app: { connect: { id: appId } },
+                ...(appId ? { app: { connect: { id: appId } } } : {}),
                 ApiKeyPrice: {
                     create: {
                         subscriptionType,
-                        monthlyFee: monthlyFee || 0,
+                        monthlyFee: monthlyFee,
                         isFree: isFree || false,
-                        client: { connect: { id: clientId } }
+                        fees: isFree ? 0 : fees,
+                        clientId
                     }
                 }
             },
+            include: {
+                ApiKeyPrice: true,
+                client: true,
+                app: true
+            }
         });
+        if (!isFree) {
+            const apiKeyPrice = key.ApiKeyPrice[0];
+            const today = new Date();
+            await this.prisma.apiInvoice.create({
+                data: {
+                    clientId,
+                    apiKeyId: key.id,
+                    indexFee: 1,
+                    month: today.getMonth() + 1,
+                    year: today.getFullYear(),
+                    totalAmount: monthlyFee,
+                    paymentStatus: 'pending'
+                }
+            });
+            this.logger.log(`First invoice created for client ${key.client.email} and ApiKey ${key.key}`);
+        }
+        else {
+            this.logger.log(`ApiKey generated for client ${key.client.email} with a free plan.`);
+        }
         return { success: true, data: key };
     }
     async listAllApiKeysForClient(clientId) {
@@ -273,7 +300,7 @@ let ClientsService = class ClientsService {
     }
 };
 exports.ClientsService = ClientsService;
-exports.ClientsService = ClientsService = __decorate([
+exports.ClientsService = ClientsService = ClientsService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], ClientsService);
